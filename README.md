@@ -1,3 +1,56 @@
+
+# PicoEMP - Descrição das Funcionalidades e Limites Operacionais
+
+## Frequência de Pulsos por Segundo
+
+A frequência máxima de geração de pulsos pelo PicoEMP é influenciada por fatores como a duração do pulso (`pulse_time`), o tempo de recarga do circuito de alta tensão e as configurações específicas do dispositivo. Embora o código não especifique um limite exato, é importante considerar que o circuito de carga de alta tensão pode necessitar de tempo para recarregar entre os pulsos. Portanto, a taxa de repetição dos pulsos pode ser limitada a alguns pulsos por segundo para garantir a operação segura e eficaz do dispositivo.
+
+---
+
+## Modos `hvp_internal` e `hvp_external`
+
+- **`hvp_internal`:** Quando ativado, o PicoEMP utiliza sua fonte interna de alta tensão para gerar os pulsos eletromagnéticos. Isso é configurado chamando a função `picoemp_configure_pulse_output()` e definindo a variável `hvp_internal` como `true`. A tensão interna gerada é de aproximadamente 250V.
+
+- **`hvp_external`:** Neste modo, o dispositivo é configurado para utilizar uma fonte externa de alta tensão. Isso é feito chamando a função `picoemp_configure_pulse_external()` e definindo `hvp_internal` como `false`. Ao utilizar uma fonte externa, é crucial garantir que a tensão fornecida esteja dentro das especificações de segurança e compatibilidade do dispositivo para evitar danos ou riscos.
+
+---
+
+## Função `fast_trigger` e Limites dos Parâmetros
+
+- **Função `fast_trigger`:** Esta função utiliza a Máquina de Estados Programável (PIO) do Raspberry Pi Pico para gerar pulsos com alta precisão temporal. Ela configura o PIO para emitir um pulso com base nos parâmetros `pulse_delay_cycles` (número de ciclos de atraso antes do pulso) e `pulse_time_cycles` (duração do pulso em ciclos).
+
+- **Limites dos Parâmetros:**
+  - **`pulse_delay_cycles`:** Este parâmetro define o número de ciclos de clock a serem aguardados antes de gerar o pulso. O valor máximo depende da largura do registrador utilizado para armazenar esse valor. Se for um registrador de 32 bits, o valor máximo seria 2³² - 1 (4.294.967.295). Valores muito altos podem não ser práticos devido às limitações de tempo real e ao comportamento do hardware.
+  
+  - **`pulse_time_cycles`:** Define a duração do pulso em ciclos de clock. Semelhante ao `pulse_delay_cycles`, o limite máximo depende da capacidade do registrador (por exemplo, 2³² - 1 para um registrador de 32 bits). É importante configurar esse valor de acordo com a frequência de operação do clock do sistema para obter a duração de pulso desejada.
+
+---
+
+## Tempo Máximo para `config_pulse_time` em Microssegundos
+
+A função `config_pulse_time` define a duração do pulso em microssegundos. Embora o código fornecido não especifique um limite máximo explícito, a duração do pulso é limitada pela capacidade do hardware e pela segurança operacional. Pulsos muito longos podem sobrecarregar o circuito e potencialmente causar danos. Recomenda-se consultar a documentação oficial do PicoEMP ou realizar testes controlados para determinar o tempo máximo seguro para a sua aplicação específica.
+
+---
+
+## Valores para `config_pulse_power`
+
+A função `config_pulse_power` configura a potência do pulso. No código fornecido, a potência padrão é definida como 0,0122 (presumivelmente em watts ou uma unidade relativa). Os valores que podem ser atribuídos a `pulse_power` devem estar dentro das capacidades do hardware para evitar sobrecarga ou danos. É aconselhável começar com valores baixos e aumentar gradualmente, monitorando o comportamento do dispositivo e consultando a documentação técnica para garantir que os limites de potência não sejam excedidos.
+
+---
+
+## Função `toggle_gp1`
+
+- **Funcionamento:** A função `toggle_gp1` alterna o estado do pino GPIO 1 do Raspberry Pi Pico. Isso é realizado utilizando a função `gpio_xor_mask(1<<1)`, que inverte o estado atual do pino (se estiver em nível alto, muda para baixo, e vice-versa).
+
+- **Utilização:** Esta função pode ser utilizada para depuração ou para controlar periféricos externos conectados ao pino GPIO 1. Por exemplo, pode ser usada para ligar ou desligar um LED, acionar um relé ou enviar sinais de controle para outros dispositivos. É importante garantir que o hardware conectado ao pino GPIO 1 seja compatível com os níveis de tensão e corrente fornecidos pelo Raspberry Pi Pico para evitar danos ao microcontrolador ou ao dispositivo externo.
+
+---
+
+Para informações mais detalhadas e específicas, recomenda-se consultar a documentação oficial do PicoEMP e do Raspberry Pi Pico, bem como os repositórios e manuais fornecidos pelos desenvolvedores. [Documentação Oficial](https://github.com/newaetech/chipshouter-picoemp)
+
+
+
+
 # Comandos Disponíveis no Console Serial do PicoEMP
 
 ## `cmd_arm` (Código: 0)
