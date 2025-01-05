@@ -1,3 +1,120 @@
+# Comandos Disponíveis no Console Serial do PicoEMP
+
+## `cmd_arm` (Código: 0)
+
+**Função:** Ativa o estado de prontidão do PicoEMP, preparando-o para gerar pulsos eletromagnéticos.
+
+**Implementação:** Chama a função `arm()`, que acende o LED indicador de carregamento (`PIN_LED_CHARGE_ON`) e define a variável `armed` como `true`.
+
+---
+
+## `cmd_disarm` (Código: 1)
+
+**Função:** Desativa o estado armado do PicoEMP, interrompendo o carregamento de alta tensão e colocando o dispositivo em modo seguro.
+
+**Implementação:** Chama a função `disarm()`, que apaga o LED de carregamento e define `armed` como `false`. Além disso, desativa o PWM chamando `picoemp_disable_pwm()`.
+
+---
+
+## `cmd_pulse` (Código: 2)
+
+**Função:** Dispara um pulso eletromagnético único, desde que o dispositivo esteja previamente armado.
+
+**Implementação:** Invoca `picoemp_pulse(pulse_time)`, que gera um pulso com a duração especificada pela variável `pulse_time`.
+
+---
+
+## `cmd_status` (Código: 3)
+
+**Função:** Retorna o estado atual do PicoEMP, incluindo informações sobre se está armado, níveis de tensão e prontidão para disparo.
+
+**Implementação:** Chama `get_status()`, que verifica o estado das variáveis `armed`, `PIN_IN_CHARGED`, `timeout_active` e `hvp_internal`, combinando essas informações em um único valor retornado.
+
+---
+
+## `cmd_enable_timeout` (Código: 4)
+
+**Função:** Ativa o temporizador de segurança que desarma automaticamente o dispositivo após um período de inatividade.
+
+**Implementação:** Define `timeout_active` como `true` e atualiza o tempo limite chamando `update_timeout()`.
+
+---
+
+## `cmd_disable_timeout` (Código: 5)
+
+**Função:** Desativa o temporizador de segurança, permitindo que o dispositivo permaneça armado indefinidamente até ser desarmado manualmente.
+
+**Implementação:** Define `timeout_active` como `false`.
+
+---
+
+## `cmd_fast_trigger` (Código: 6)
+
+**Função:** Inicia um disparo rápido utilizando a máquina de estados programável (PIO) para gerar pulsos com alta precisão temporal.
+
+**Implementação:** Chama a função `fast_trigger()`, que configura o PIO para gerar um pulso com os parâmetros `pulse_delay_cycles` e `pulse_time_cycles`.
+
+---
+
+## `cmd_config_pulse_delay_cycles` (Código não especificado)
+
+**Função:** Configura o número de ciclos de atraso antes do disparo do pulso.
+
+**Implementação:** Atualiza a variável `pulse_delay_cycles` com o valor recebido via FIFO.
+
+---
+
+## `cmd_config_pulse_time_cycles` (Código não especificado)
+
+**Função:** Define a duração do pulso em ciclos de clock.
+
+**Implementação:** Atualiza `pulse_time_cycles` com o valor recebido.
+
+---
+
+## `cmd_internal_hvp` (Código não especificado)
+
+**Função:** Configura o PicoEMP para utilizar a fonte de alta tensão interna.
+
+**Implementação:** Chama `picoemp_configure_pulse_output()` e define `hvp_internal` como `true`.
+
+---
+
+## `cmd_external_hvp` (Código não especificado)
+
+**Função:** Configura o dispositivo para utilizar uma fonte de alta tensão externa.
+
+**Implementação:** Chama `picoemp_configure_pulse_external()` e define `hvp_internal` como `false`.
+
+---
+
+## `cmd_config_pulse_time` (Código não especificado)
+
+**Função:** Define a duração do pulso em microssegundos.
+
+**Implementação:** Atualiza a variável `pulse_time` com o valor recebido.
+
+---
+
+## `cmd_config_pulse_power` (Código não especificado)
+
+**Função:** Configura a potência do pulso.
+
+**Implementação:** Atualiza `pulse_power` com o valor recebido, utilizando uma união para conversão entre `float` e `uint32_t`.
+
+---
+
+## `cmd_toggle_gp1` (Código não especificado)
+
+**Função:** Alterna o estado do pino GPIO 1, podendo ser utilizado para funcionalidades adicionais ou depuração.
+
+**Implementação:** Utiliza `gpio_xor_mask(1<<1)` para inverter o estado atual do pino.
+
+
+
+
+
+
 # ChipSHOUTER-PicoEMP
 
 [![CC BY-SA 3.0][cc-by-sa-shield]][cc-by-sa]
